@@ -1,6 +1,6 @@
-import pool from '../db.js';
+import { pool } from '../db.js';
 
-const dohvatiSveAgencije = async(req, res) => {
+export const dohvatiSveAgencije = async(req, res) => {
     try{
         const agencije = await pool.query(
             'SELECT agencija_id, user_id, naziv_agencije, opis, kontakt_broj, kontakt_email, datum_osnivanja FROM agencije')
@@ -9,7 +9,7 @@ const dohvatiSveAgencije = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-const dohvatiPoId = async(req, res) => {
+export const dohvatiPoId = async(req, res) => {
     try {
         const { id } = req.params;
         const id_agencija = await pool.query('SELECT * FROM agencije WHERE agencija_id = $1', [id]);
@@ -21,7 +21,7 @@ const dohvatiPoId = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-const dohvatiPuovanjePoAgenciji = async(req, res) => {
+export const dohvatiPuovanjePoAgenciji = async(req, res) => {
     try {
         const { id } = req.params;
         const putovanjeAgencija = await pool.query('SELECT * FROM putovanja WHERE agencija_id = $1 ORDER BY start_date ASC', [id]);
@@ -30,7 +30,7 @@ const dohvatiPuovanjePoAgenciji = async(req, res) => {
         res.status(500).json({ error: error.message});
     }
 }
-const dohvatiUpitePoAgenciji = async(req, res) => {
+export const dohvatiUpitePoAgenciji = async(req, res) => {
     try {
         const { id } = req.params;
         const upiti = await pool.query(`
@@ -46,9 +46,3 @@ const dohvatiUpitePoAgenciji = async(req, res) => {
         res.status(500).json({ error: error.message});
     }
 }
-export {
-    dohvatiSveAgencije,
-    dohvatiPoId,
-    dohvatiPuovanjePoAgenciji,
-    dohvatiUpitePoAgenciji
-};

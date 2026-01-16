@@ -1,7 +1,7 @@
-import pool from '../db.js';
+import { pool } from '../db.js';
 import { hashLozinka, provjeraLozinke, generiranjeJwt } from '../utils/auth.js';
 
-const registracija = async(req, res) => {
+export const registracija = async(req, res) => {
     try {
         const { ime, prezime, email, password, user_type } = req.body;
         if (!ime || !prezime || !email || !password || !user_type) {
@@ -32,7 +32,7 @@ const registracija = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-const login = async(req, res) => {
+export const login = async(req, res) => {
     try {
         const { email, password } = req.body;
         if(!email || !password) {
@@ -58,14 +58,14 @@ const login = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-const googlelogin = async(req, res) => {
+export const googlelogin = async(req, res) => {
     try {
         const { ime, prezime, email, google_id } = req.body;
         let postoji = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         let user;
         if(postoji.rows.length == 0) {
             postoji = await pool.query(`
-                INSERT INTO users { ime, prezime, email, google_id, user_type
+                INSERT INTO users (ime, prezime, email, google_id, user_type)
                 VAUES ($1, $2, $3, $4, $5)
                 RETURNING ime, prezime, email, google_id, user_id, user_type`,
                 [ime, prezime, email, google_id, 'korisnik']
@@ -86,18 +86,18 @@ const googlelogin = async(req, res) => {
         })
         res.status(200).json({ poruka: 'Uspješna prijava putem Googla', user, jwt_token: token });
     } catch(error) { 
-        res.status(500).json({ error: message });
+        res.status(500).json({ error: error.message });
     }
 }
-const sviKorisnici = async(req, res) => {
+export const sviKorisnici = async(req, res) => {
     try {
         const korisnici = await pool.query('SELECT user_id, ime, prezime, email, user_type, created_at FROM users');
         res.status(200).json(korisnici);
     } catch(error) {
-        res.status(500).json({ error: message });
+        res.status(500).json({ error: error.message });
     }
 }
-const korisnikPoID = async(req, res) => {
+export const korisnikPoID = async(req, res) => {
     try {
         const { id } = req.params;
         const korinikPostoji = await pool.query(`
@@ -110,10 +110,10 @@ const korisnikPoID = async(req, res) => {
         }
         res.status(200).json(korinikPostoji.rows[0]);
     } catch(error) {
-        res.status(500).json({ error: message });
+        res.status(500).json({ error: error.message });
     }
 }
-const prijavljenKorisnik = async(req, res) => {
+export const prijavljenKorisnik = async(req, res) => {
     try {
         const { user_id } = req.authUser;
         const postoji = await pool.query(`
@@ -126,14 +126,6 @@ const prijavljenKorisnik = async(req, res) => {
         }
         res.status(200).json(postoji.rows[0]);
     } catch(error) {
-        res.status(500).json({ error: message });
+        res.status(500).json({ error: error.message });
     }
-}
-export {
-    registracija,
-    login,
-    googlelogin,
-    sviKorisnici,
-    korisnikPoID,
-    prijavljenKorisnik
 }
