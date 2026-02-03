@@ -15,13 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
-
-app.use('/agencije', agencijeR);
-app.use('/putovanja', putovanjaR);
-app.use('/todo', todoR);
-app.use('/users', usersR);
-app.use('/wishlist', wishlistR);
-app.use('/upiti', upitiR);
+app.use('/api/agencije', agencijeR);
+app.use('/api/putovanja', putovanjaR);
+app.use('/api/todo', todoR);
+app.use('/api/users', usersR);
+app.use('/api/wishlist', wishlistR);
+app.use('/api/upiti', upitiR);
 
 app.get('/', (req, res) => {
     res.send('API radi');
