@@ -4,7 +4,7 @@ import { hashLozinka, provjeraLozinke, generiranjeJwt } from '../utils/auth.js';
 export const registracija = async(req, res) => {
     try {
         const { ime, prezime, email, password, user_type } = req.body;
-        if (!ime || !prezime || !email || !password || !user_type) {
+        if (!ime || !prezime || !email || !password) {
             return res.status(400).json({ poruka: 'Svi podaci su obvezni'});
         }
         const userPostoji = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -33,6 +33,7 @@ export const registracija = async(req, res) => {
     }
 }
 export const login = async(req, res) => {
+    console.log('Body requesta:', req.body);
     try {
         const { email, password } = req.body;
         if(!email || !password) {
@@ -52,8 +53,8 @@ export const login = async(req, res) => {
             email: user.email,
             user_type: user.user_type
         })
-        const { password: _, ...userWithoutPasswor } = user;
-        res.status(200).json({ poruka: 'Uspješna prijava', user: userWithoutPasswor, jwt_token: token });
+        const { password: _, ...userWithoutPassword } = user;
+        res.status(200).json({ poruka: 'Uspješna prijava', user: userWithoutPassword, jwt_token: token });
     } catch(error) {
         res.status(500).json({ error: error.message });
     }

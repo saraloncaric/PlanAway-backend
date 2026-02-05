@@ -3,9 +3,9 @@ import { dohvatiListe, dodajNoviZadatak, azurirajToDo, obrisiToDo } from '../con
 import { authMiddleware, isKorisnik } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
-router.get('/liste', authMiddleware, dohvatiListe, isKorisnik);
-router.post('/', dodajNoviZadatak);
-router.put('/:zadatak_id', authMiddleware, azurirajToDo, isKorisnik);
-router.delete('/:zadatak_id', authMiddleware, obrisiToDo, isKorisnik);
+router.get('/liste', authMiddleware, isKorisnik, dohvatiListe);
+router.post('/', authMiddleware, isKorisnik, dodajNoviZadatak);
+router.put('/:zadatak_id', authMiddleware, isKorisnik, azurirajToDo);
+router.delete('/:zadatak_id', authMiddleware, isKorisnik, obrisiToDo);
 
 export default router;
