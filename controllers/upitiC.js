@@ -32,13 +32,13 @@ export const azurirajStatusUpita = async(req, res) => {
         const { upit_id } = req.params;
         const { user_id } = req.authUser;
         const { status } = req.body;
-        const statusi = ['Na čekanju', 'Prihvaćen', 'Odbijen'];
-        if (!status || statusi.includes(status)) {
+        const statusi = ['novi','pregledan','odgovoren','odbijen','prihvaćen'];
+        if (!status || !statusi.includes(status)) {
             return res.status(400).json({ poruka: 'Status je obavezan, može biti: na čekanju, prihvaćen ili odbijen'});
         }
         const upitPostoji = await pool.query('SELECT * FROM upiti_putovanja WHERE upit_id = $1', [upit_id]);
         if(upitPostoji.rows.length == 0) {
-            return res.status(404).json({ pourka: 'Upit za putovanje ne postoji' });
+            return res.status(404).json({ poruka: 'Upit za putovanje ne postoji' });
         }
         const upit = upitPostoji.rows[0];
         const pripadaAgneciji = await pool.query('SELECT * FROM agencije WHERE agencija_id = $1 AND user_id = $2',
@@ -62,12 +62,12 @@ export const obrisiUpit = async(req, res) => {
             return res.status(400).json({ poruka: 'Upit nije pronađen'})
         }
         const podaci = upit.rows[0];
-        if (user_type === 'korisnik' && upitData.user_id !== user_id) {
+        if (user_type === 'korisnik' && podaci.user_id !== user_id) {
             return res.status(404).json({ poruka: 'Ne možete obrisati ovaj upit' });
         }
         if (user_type === 'agencija') {
             const pripadaAgneciji = await pool.query('SELECT * FROM agencije WHERE agencija_id = $1 AND user_id = $2',
-                [upitData.agencija_id, user_id]
+                [podaci.agencija_id, user_id]
             );
             if(pripadaAgneciji.rows.length === 0) {
                 return res.status(404).json({ poruka: 'Ne možete obrisati ovaj upit' });
@@ -90,6 +90,38 @@ export const dohvatiUpiteKorisnika = async(req, res) => {
             JOIN agencije ON upiti_putovanja.agencija_id = agencije.agencija_id
             WHERE upiti_putovanja.user_id = $1
             ORDER BY upiti_putovanja.created_at DESC`, [user_id]
+        );
+        res.status(200).json(upiti.rows);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+export const dohvatiUpiteAgencije = async(req, res) => {
+    try {
+        const { user_id } = req.authUser;
+        const agencija = await pool.query('SELECT agencija_id FROM agencije WHERE user_id = $1', [user_id]);
+        if (agencija.rows.length === 0) {
+            return res.status(404).json({ poruka: 'Agencija nije pronađena' });
+        }
+        const agencija_id = agencija.rows[0].agencija_id;
+        const upiti = await pool.query(`
+            SELECT 
+                up.upit_id,
+                up.broj_ljudi,
+                up.status,
+                up.created_at,
+                p.naslov,
+                p.destinacija,
+                p.start_date,
+                u.email AS kontakt_email,
+                u.ime,
+                u.prezime
+            FROM upiti_putovanja up
+            JOIN putovanja p ON up.putovanje_id = p.putovanje_id
+            JOIN users u ON up.user_id = u.user_id
+            WHERE up.agencija_id = $1
+            ORDER BY up.created_at DESC`, 
+            [agencija_id]
         );
         res.status(200).json(upiti.rows);
     } catch(error) {
