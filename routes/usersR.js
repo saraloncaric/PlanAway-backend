@@ -4,8 +4,8 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 import { validationRegistracija, validationLogin } from '../middleware/validators.js';
 
 const router = express.Router();
-router.post('/registracija', registracija); 
-router.post('/login', login);   
+router.post('/registracija', validationRegistracija, registracija); 
+router.post('/login', validationLogin, login);   
 router.post('/googlelogin', googlelogin);
 router.get('/ime', authMiddleware, prijavljenKorisnik);
 router.get('/', authMiddleware, sviKorisnici);

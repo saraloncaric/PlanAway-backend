@@ -3,11 +3,11 @@ import { body, param, query, validationResult } from "express-validator";
 export const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.message });
+        return res.status(400).json({ errors: errors.array() });
     }
     next();
 }
-export const validationRegistracija = (req, res, next) => {
+export const validationRegistracija = [
     body('ime')
         .trim()
         .notEmpty().withMessage('Ime je obavezno')
@@ -27,8 +27,8 @@ export const validationRegistracija = (req, res, next) => {
         .notEmpty().withMessage('Lozinka je obavezna')
         .isLength({ min: 6 }).withMessage('Lozinka mora imati minimalno 6 znakova'),
     handleValidationErrors
-}
-export const validationLogin = (req, res, next) => {
+]
+export const validationLogin = [
     body('email')
         .trim()
         .notEmpty().withMessage('Email je obavezan')
@@ -37,16 +37,16 @@ export const validationLogin = (req, res, next) => {
     body('password')
         .notEmpty().withMessage('Lozinka je obavezna'),
     handleValidationErrors
-}
-export const validationToDo = (req, res, next) => {
+]
+export const validationToDo = [
     body('kategorija')
         .optional()
         .trim()
         .isLength({ max: 50 }).withMessage('Kategorija može imati maksimalno 50 znakova')
         .escape(),
     handleValidationErrors
-}
-export const validationId = (req, res, next) => {
+]
+export const validationId = [
     param('id').isInt({ min: 1}).withMessage('ID mora biti pozitivan broj'),
     handleValidationErrors
-}
+]
