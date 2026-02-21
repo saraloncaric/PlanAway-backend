@@ -46,3 +46,26 @@ export const dohvatiUpitePoAgenciji = async(req, res) => {
         res.status(500).json({ error: error.message});
     }
 }
+export const azurirajAgenciju = async(req, res) => {
+    try {
+        const { user_id } = req.authUser;
+        const { naziv_agencije, opis, kontakt_broj, kontakt_email } = req.body;
+        const agencija = await pool.query('SELECT * FROM agencije WHERE user_id = $1', [user_id]);
+        if(agencija.rows.length === 0) {
+            return res.status(404).json({ poruka: 'Agencija nije pronađena' });
+        }
+        const azurirana = await pool.query(`
+            UPDATE agencije
+            SET naziv_agencije = COALESCE($1, naziv_agencije),
+                opis = COALESCE($2, opis),
+                kontakt_broj = COALESCE($3, kontakt_broj),
+                kontakt_email = COALESCE($4, kontakt_email)
+            WHERE user_id = $5
+            RETURNING *`,
+            [naziv_agencije, opis, kontakt_broj, kontakt_email, user_id]
+        );
+        res.json({ poruka: 'Agencija ažurirana', agencija: azurirana.rows[0] });
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+}

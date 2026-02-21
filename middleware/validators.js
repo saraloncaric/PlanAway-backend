@@ -21,8 +21,7 @@ export const validationRegistracija = [
     body('email')
         .trim()
         .notEmpty().withMessage('Email je obavezno')
-        .isEmail().withMessage('Email adresa nije ispravna')
-        .normalizeEmail(),
+        .isEmail().withMessage('Email adresa nije ispravna'),
     body('password')
         .notEmpty().withMessage('Lozinka je obavezna')
         .isLength({ min: 6 }).withMessage('Lozinka mora imati minimalno 6 znakova'),
@@ -32,8 +31,7 @@ export const validationLogin = [
     body('email')
         .trim()
         .notEmpty().withMessage('Email je obavezan')
-        .isEmail().withMessage('Email adresa nije ispravna')
-        .normalizeEmail(),
+        .isEmail().withMessage('Email adresa nije ispravna'),
     body('password')
         .notEmpty().withMessage('Lozinka je obavezna'),
     handleValidationErrors

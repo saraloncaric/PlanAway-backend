@@ -137,7 +137,7 @@ export const obrisiPutovanje = async(req, res) => {
         }
         const putovanje = putovanjePostoji.rows[0];
         const pripadaAgneciji = await pool.query('SELECT * FROM agencije WHERE agencija_id = $1 AND user_id = $2',
-            [agencija_id, user_id]
+            [putovanje.agencija_id, user_id]
         );
         if (pripadaAgneciji.rows.length === 0) {
             return res.status(404).json({ poruka: 'Ne možete obrisati putovanje' });
