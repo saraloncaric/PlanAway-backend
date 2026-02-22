@@ -20,7 +20,7 @@ export const posaljiUpit = async(req, res) => {
         const poslaniUpit = await pool.query(`
             INSERT INTO upiti_putovanja (user_id, putovanje_id, agencija_id, broj_ljudi, status) 
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING *`, [user_id, agencija_id, putovanje_id, broj_ljudi, 'Na čekanju']
+            RETURNING *`, [user_id, putovanje_id, agencija_id, broj_ljudi, 'novi']
         );
         res.status(200).json({ poruka: 'Uspješno poslan upit za putovanje', upit: poslaniUpit.rows[0] });
     } catch(error) {
