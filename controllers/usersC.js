@@ -1,8 +1,5 @@
 import { pool } from '../db.js';
 import { hashLozinka, provjeraLozinke, generiranjeJwt } from '../utils/auth.js';
-// import { OAuth2Client } from 'google-auth-library';
-
-// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const registracija = async(req, res) => {
     try {
@@ -62,50 +59,6 @@ export const login = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-/*export const googlelogin = async(req, res) => {
-    try {
-        const { credential } = req.body; 
-        if (!credential) {
-            return res.status(400).json({ poruka: 'Google token je obavezan' });
-        }
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: process.env.GOOGLE_CLIENT_ID
-        });
-        const payload = ticket.getPayload();
-        const { email, given_name, family_name, sub: google_id } = payload;
-
-        let korisnik = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (korisnik.rows.length === 0) {
-            korisnik = await pool.query(`
-                INSERT INTO users (ime, prezime, email, google_id, user_type)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING user_id, ime, prezime, email, user_type, created_at`,
-                [given_name, family_name, email, google_id, 'korisnik']
-            );
-        } else {
-            if (!korisnik.rows[0].google_id) {
-                await pool.query(
-                    'UPDATE users SET google_id = $1 WHERE user_id = $2',
-                    [google_id, korisnik.rows[0].user_id]
-                );
-            }
-        }
-        const user = korisnik.rows[0];
-        const token = await generiranjeJwt({
-            user_id: user.user_id,
-            email: user.email,
-            user_type: user.user_type
-        });
-        res.status(200).json({ 
-            poruka: 'Uspješna prijava putem Googla', 
-            user, 
-            jwt_token: token 
-        });
-    } catch(error) { 
-        res.status(500).json({ error: error.message });
-    }
-} */
 export const sviKorisnici = async(req, res) => {
     try {
         const korisnici = await pool.query('SELECT user_id, ime, prezime, email, user_type, created_at FROM users');
