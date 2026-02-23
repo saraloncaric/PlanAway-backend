@@ -86,7 +86,7 @@ export const dohvatiUpiteKorisnika = async(req, res) => {
             SELECT upiti_putovanja.*, putovanja.naslov, putovanja.destinacija, putovanja.cijena,
             putovanja.start_date, agencije.naziv_agencije, agencije.kontakt_email
             FROM upiti_putovanja
-            JOIN putovanja ON upiti_putovanja.putovanja_id = putovanja.putovanje_id
+            JOIN putovanja ON upiti_putovanja.putovanje_id = putovanja.putovanje_id
             JOIN agencije ON upiti_putovanja.agencija_id = agencije.agencija_id
             WHERE upiti_putovanja.user_id = $1
             ORDER BY upiti_putovanja.created_at DESC`, [user_id]
